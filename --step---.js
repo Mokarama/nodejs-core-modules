@@ -11,4 +11,6 @@
  * 10.file-organizer.js
  * 11.os-basics.js
  * 12.hashing.js
+ * 13.encryption.js
+ * 
  */
