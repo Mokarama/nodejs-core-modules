@@ -8,4 +8,7 @@
  * 7.delete-file.js
  * 8.path-basic.js
  * 9.file-organizer.js
+ * 10.file-organizer.js
+ * 11.os-basics.js
+ * 12.hashing.js
  */
