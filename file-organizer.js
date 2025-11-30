@@ -38,10 +38,104 @@ const testFiles=[
 function initializeDirectories(){
     if(!fs.existsSync(sourceDir)){
         fs.mkdirSync(sourceDir, { recursive: true});
+
         testFiles.forEach(file=>{
             fs.writeFileSync(path.join(sourceDir, file), `Content of ${file}`);
         });
-        console.log("Messy directories files are created!!!")
+        console.log("Messy directories files are created!!!");
+
+        if(!fs.existsSync(sourceDir)){
+            fs.mkdir(organizerDir, {recursive: true});
+        }
+
+        Object.keys(categories).forEach(category=>{
+            const categoryPath=path.join(organizerDir, category);
+            if(!fs.existsSync(categoryPath)){
+                fs.mkdirSync(categoryPath);
+            }
+        });
     }
+
 }
-initializeDirectories()
+
+function getCategory(){
+    const ext=path.extname(filename).toLowerCase();//".pdf"
+
+    //[images: [".jpg", ".jpeg", ".svg"]],
+   for(const [category, extension] of Object.entries(categories)){
+    {
+        if(extension.includes(ext)){
+            return category;
+        }
+    }
+   } 
+ return "others";
+};
+
+function organizeFiles(){
+    console.log("file organizer \n");
+    console.log("source :", sourceDir);
+    console.log("Destination :", organizerDir);
+    console.log("\n" + "_".repeat(50) + "\n");
+
+    const files =fs.readdirSync(sourceDir);
+
+    if(files.length === 0){
+        console.log("No files to work on!!")
+        return
+
+    }
+    console.log(`found ${files.length} files to organize \n`);
+
+    const stats ={
+        total: 0,
+        byCategory:{},
+    }
+    files.forEach(file=>{
+        const sourcePath =path.join(sourceDir, file);
+        const stat =fs.statSync(sourcePath);
+        if(stat.isDirectory()){
+            return;
+        };
+        const category = getCategory(file);
+        const destDir=path.join(organizedDir, category);
+        const destPath=path.join(destDir, destPath)
+
+        fs.copyFileSync(sourcePath, destPath);
+
+        stats.total++;
+        stats.byCategory[category]=(stats.byCategory[category] || 0) +1;
+
+        console.log(`${file}`)
+        console.log(`${category}`)
+        console.log(`${stat.size}`)
+    });
+};
+
+function showHello(){
+    console.log(`
+        file organizer - usage:
+        
+        commands: 
+        init - create files
+        organized - organize files into categories
+
+        example:
+        node file-organizer init
+        node file-organizer organize
+        `)
+};
+
+const command = process.argv[2];
+switch (command) {
+    case "init":
+        initializeDirectories();
+        break;
+
+    case "organize": 
+        organizeFiles();
+    default:
+        showHello();
+        break;
+}
+initializeDirectories();
